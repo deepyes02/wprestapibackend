@@ -1,0 +1,13 @@
+wp-admin
+wp-includes
+
+# root
+/*.*
+!.gitignore
+/wp-content/plugins/
+/wp-content/upgrade/
+/wp-content/uploads/
+/wp-content/index.php
+
+/wp-content/themes/*
+!/wp-content/themes/wprestapi

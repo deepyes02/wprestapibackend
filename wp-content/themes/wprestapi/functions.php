@@ -229,3 +229,26 @@ function so240254_rest_post_query($args)
     return $args;
 }
 add_filter('rest_post_query', 'so240254_rest_post_query');
+
+
+// custom REST API ENDPOINT
+function wprestapi_nws_members(){
+	$data = [
+		'sunil' => 'Support Engineer',
+		'santosh' => 'Project Manager',
+		'sam' => 'Maintenance Manager',
+		'nejar' => 'Quality &amp; Assurance Engineer',
+		'niraj' => 'Dev Ops',
+		'degima' => 'Quality & Assurance Engineer',
+		'ramesh'	=> 'Frontend Engineer'
+	];
+	return $data;
+}
+
+add_action('rest_api_init', function() {
+	register_rest_route('nws', '/members/', [
+		'methods'	=> 'GET',
+		'callback'	=> 'wprestapi_nws_members'
+	]);
+
+});

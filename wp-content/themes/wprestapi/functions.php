@@ -181,39 +181,51 @@ if (defined('JETPACK__VERSION')) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
 
+
+
+
+
+
+
+/* CUSTOM CODE
+FOR REST API
+*/
 /* Add featured image to REST API */
- 
-add_action('rest_api_init', 'register_rest_images' );
-function register_rest_images(){
-    register_rest_field( array('post', 'page'),
-        'fimg_url',
-        array(
-            'get_callback'    => 'get_rest_featured_image',
-            'update_callback' => null,
-            'schema'          => null,
-        )
-    );
+
+add_action('rest_api_init', 'register_rest_images');
+function register_rest_images()
+{
+	register_rest_field(
+		array('post', 'page'),
+		'fimg_url',
+		array(
+			'get_callback'    => 'get_rest_featured_image',
+			'update_callback' => null,
+			'schema'          => null,
+		)
+	);
 }
-function get_rest_featured_image( $object, $field_name, $request ) {
-    if( $object['featured_media'] ){
-        $img = wp_get_attachment_image_src( $object['featured_media'], 'thumbnail' );
-        return $img[0];
-    }
-    return false;
+function get_rest_featured_image($object, $field_name, $request)
+{
+	if ($object['featured_media']) {
+		$img = wp_get_attachment_image_src($object['featured_media'], 'thumbnail');
+		return $img[0];
+	}
+	return false;
 }
 
 
 // make draft public for authenticated users
 /**
-* make drafts public for logged in users
-*/
+ * make drafts public for logged in users
+ */
 function so240254_init()
 {
-        global $wp_post_statuses;
+	global $wp_post_statuses;
 
-        $wp_post_statuses['draft']->public = true;
-        $wp_post_statuses['draft']->exclude_from_search = false;
-        $wp_post_statuses['draft']->publicly_queryable = true;
+	$wp_post_statuses['draft']->public = true;
+	$wp_post_statuses['draft']->exclude_from_search = false;
+	$wp_post_statuses['draft']->publicly_queryable = true;
 }
 add_action('init', 'so240254_init');
 
@@ -222,17 +234,18 @@ add_action('init', 'so240254_init');
 */
 function so240254_rest_post_query($args)
 {
-    if (is_user_logged_in()) :
-        $args['post_status'] = ['publish', 'draft'];
-    endif;
+	if (is_user_logged_in()) :
+		$args['post_status'] = ['publish', 'draft'];
+	endif;
 
-    return $args;
+	return $args;
 }
 add_filter('rest_post_query', 'so240254_rest_post_query');
 
 
 // custom REST API ENDPOINT
-function wprestapi_nws_members(){
+function wprestapi_nws_members()
+{
 	$data = [
 		'sunil' => 'Support Engineer',
 		'santosh' => 'Project Manager',
@@ -245,10 +258,29 @@ function wprestapi_nws_members(){
 	return $data;
 }
 
-add_action('rest_api_init', function() {
+add_action('rest_api_init', function () {
 	register_rest_route('nws', '/members/', [
 		'methods'	=> 'GET',
 		'callback'	=> 'wprestapi_nws_members'
 	]);
 
+	register_rest_route('nws', '/meals/', [
+		'methods'	=> 'GET',
+		'callback'	=> 'wprestapi_lunch_list'
+	]);
 });
+
+function wprestapi_lunch_list()
+{
+	$lunch = [
+		'monday'	=> ['omlette', 'tea', 'cookies'],
+		'tuesday'	=> ['sauce', 'juice', 'sausage'],
+		'wednesday'	=> ['tea', 'bread', 'chips'],
+		'thursday'	=> ['dal', 'bhat'],
+		'friday'	=> ['burger', 'chips', 'nuggets'],
+
+	];
+
+	
+	return $lunch;
+}
